@@ -1,0 +1,22 @@
+# Secrets & Environment Variables
+.env
+.env.local
+.env.*.local
+
+# Android / App Signing Keys (CRITICAL)
+*.keystore
+*.jks
+*.p12
+*.mobileprovision
+google-services.json
+
+# OS & Editor Files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Build & Dependency Folders
+node_modules/
+dist/
+build/

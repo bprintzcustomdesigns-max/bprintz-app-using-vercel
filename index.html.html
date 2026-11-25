@@ -955,7 +955,56 @@
                     <button onclick="changeQty(-1)">−</button>
                     <span id="qtyDisplay">1</span>
                     <button onclick="changeQty(1)">+</button>
-                </div>
+                </div><div style="margin: 14px 0; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; background: #f8fafc;">
+  <div style="font-weight: 700; margin-bottom: 6px; color: #0f172a;">Test Card Checkout (AUD)</div>
+  <input type="text" value="4242 •••• •••• 4242  |  12/28  |  123" readonly
+         style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; margin-bottom: 8px; background: #ffffff; color: #334155; font-size: 14px;">
+  <button type="button" onclick="runTestCheckout()"
+          style="width: 100%; padding: 12px; background: #16a34a; color: #ffffff; border: none; border-radius: 6px; font-weight: 700; font-size: 15px; cursor: pointer;">
+    Pay & Submit Test Order
+  </button>
+  <div id="test-pay-msg" style="margin-top: 8px; font-weight: 700; color: #15803d; font-size: 14px;"></div>
+</div>
+
+<!-- Order Receipt Popup -->
+<div id="receipt-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:9999; align-items:center; justify-content:center; padding:16px;">
+  <div style="background:#fff; color:#0f172a; max-width:400px; width:100%; border-radius:12px; padding:20px; text-align:center; box-shadow:0 10px 25px rgba(0,0,0,0.2);">
+    <div style="font-size:40px; margin-bottom:8px;">✅</div>
+    <h3 style="margin:0 0 6px; font-size:20px;">Test Order Confirmed!</h3>
+    <p id="receipt-details" style="font-size:14px; color:#475569; margin:0 0 16px; line-height:1.5;"></p>
+    <button type="button" onclick="closeReceiptModal()" style="width:100%; padding:12px; background:#0f172a; color:#fff; border:none; border-radius:8px; font-weight:700; font-size:15px; cursor:pointer;">
+      Back to Studio
+    </button>
+  </div>
+</div>
+
+<script>
+function runTestCheckout() {
+  const msg = document.getElementById("test-pay-msg");
+  const orderNum = "BP-" + Math.floor(1000 + Math.random() * 9000);
+  msg.textContent = "Processing test card...";
+
+  setTimeout(() => {
+    msg.textContent = "✓ PAID (TEST MODE) — Order #" + orderNum;
+
+    // Automatically triggers your existing order email button
+    const emailBtn = Array.from(document.querySelectorAll("button")).find(
+      b => b.textContent.includes("Send Order to Bprintz Email")
+    );
+    if (emailBtn) emailBtn.click();
+
+    // Opens the confirmation receipt popup
+    document.getElementById("receipt-details").innerHTML =
+      "<strong>Order #" + orderNum + "</strong><br>Status: <strong>PAID (Test Mode)</strong><br>Your order details have been sent to Bprintz Custom Designs.";
+    document.getElementById("receipt-modal").style.display = "flex";
+  }, 800);
+}
+
+function closeReceiptModal() {
+  document.getElementById("receipt-modal").style.display = "none";
+  location.reload(); // Resets the cart back to 0 items
+}
+                
                 <button class="primary-btn" onclick="addToCart()">Add to Cart • <span id="liveItemPrice">$35.00</span> AUD</button>
             </div>
         </section>

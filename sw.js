@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bprintz-pod-v1';
+const CACHE_NAME = 'bprintz-pod-v2';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -23,6 +23,11 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  // Never intercept Stripe API requests or POST requests
+  if (event.request.url.includes('/api/') || event.request.method !== 'GET') {
+    return;
+  }
+
   event.respondWith(
     fetch(event.request).catch(() => caches.match(event.request))
   );

@@ -1014,7 +1014,8 @@
                     <div class="grand"><span>Total (AUD)</span><span id="grandTotalText">$0.00 AUD</span></div>
                 </div>
 
-                <button class="primary-btn" onclick="submitOrder()">Submit Order, Mockups &amp; 300 DPI Files</button>
+                <button class="primary-btn" id="stripe-checkout-btn" onclick="proceedToCheckout()">Pay &amp; Submit Order, Mockups &amp; 300 DPI Files</button>
+
 
                 <div class="export-summary" id="exportSummary"></div>
             </div>
@@ -1810,7 +1811,94 @@ renderCart();
         .catch((err) => console.error('Service Worker Failed:', err));
         });
         }
-        </script>
+        </script><script>
+  async function proceedToCheckout() {
+    if (!cart || cart.length === 0) {
+      alert('Your cart is empty.');
+      return;
+    }
+
+    const btn = document.getElementById('stripe-checkout-btn');
+    const originalText = btn.innerText;
+    btn.disabled = true;
+    btn.innerText = 'Connecting to Stripe...';
+
+    const customerName = document.getElementById('custName')?.value || '';
+    const customerEmail = document.getElementById('custEmail')?.value || '';
+    const customerPhone = document.getElementById('custPhone')?.value || '';
+    const customerAddress = document.getElementById('custAddress')?.value || '';
+
+    // Save customer details so they aren't lost when redirecting to Stripe
+    sessionStorage.setItem('bprintz_pending_order', JSON.stringify({
+      custName: customerName,
+      custEmail: customerEmail,
+      custPhone: customerPhone,
+      custAddress: customerAddress
+    }));
+
+    // Map cart items (uses discounted price if stored on item, otherwise standard price)
+    const formattedItems = cart.map(item => ({
+      name: item.product || item.name || 'Custom Garment',
+      size: item.size || 'Standard',
+      printType: item.printType || 'DTF Print',
+      price: Number(item.finalPrice || item.unitPrice || item.price || 0),
+      quantity: Number(item.qty || item.quantity || 1)
+    }));
+
+    try {
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          items: formattedItems,
+          customerEmail: customerEmail,
+          fulfillmentMethod: customerAddress.trim() ? 'shipping' : 'pickup'
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert('Checkout error: ' + (data.error || 'Unable to start Stripe session'));
+        btn.disabled = false;
+        btn.innerText = originalText;
+      }
+    } catch (error) {
+      console.error('Stripe Error:', error);
+      alert('Network error starting checkout.');
+      btn.disabled = false;
+      btn.innerText = originalText;
+    }
+  }
+
+  // Automatically submit mockups & 300 DPI files once Stripe confirms payment
+  window.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('payment') === 'success') {
+      const saved = JSON.parse(sessionStorage.getItem('bprintz_pending_order') || '{}');
+      if (saved.custName && document.getElementById('custName')) document.getElementById('custName').value = saved.custName;
+      if (saved.custEmail && document.getElementById('custEmail')) document.getElementById('custEmail').value = saved.custEmail;
+      if (saved.custPhone && document.getElementById('custPhone')) document.getElementById('custPhone').value = saved.custPhone;
+      if (saved.custAddress && document.getElementById('custAddress')) document.getElementById('custAddress').value = saved.custAddress;
+
+      sessionStorage.removeItem('bprintz_pending_order');
+      window.history.replaceState({}, document.title, window.location.pathname);
+
+      // Fires your existing order email + 300 DPI file export after payment
+      if (typeof submitOrder === 'function') {
+        submitOrder();
+      } else {
+        alert('Payment successful! Thank you for ordering with Bprintz Custom Designs.');
+      }
+    } else if (params.get('payment') === 'cancelled') {
+      alert('Payment was cancelled. Your items and designs are still in your cart.');
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  });
+</script>
+
 </body>
 </html>
 </body>

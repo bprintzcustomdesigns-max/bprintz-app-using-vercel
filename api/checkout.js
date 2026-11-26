@@ -33,7 +33,7 @@ export default async function handler(req) {
 
     const params = new URLSearchParams();
     params.append('mode', 'payment');
-    params.append('payment_method_types[]', 'card');
+    params.append('allowed_payment_method_types[]', 'card');
     params.append('success_url', `${origin}/?payment=success`);
     params.append('cancel_url', `${origin}/?payment=cancelled`);
 

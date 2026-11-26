@@ -22,7 +22,7 @@ export default async function handler(req) {
     const body = await req.json();
     const items = body.items || [];
     const customerEmail = body.customerEmail || '';
-    const origin = req.headers.get('origin') || 'https://vercel.app';
+    const origin = req.headers.get('origin') || 'https://bprintz-app-using-vercel.vercel.app';
 
     if (!items.length) {
       return new Response(JSON.stringify({ error: 'Your cart is empty' }), {
@@ -49,6 +49,7 @@ export default async function handler(req) {
       params.append(`line_items[${index}][quantity]`, String(item.quantity || 1));
     });
 
+    // FIXED: Point to the actual Stripe Checkout Sessions API endpoint
     const stripeRes = await fetch('https://stripe.com', {
       method: 'POST',
       headers: {

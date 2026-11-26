@@ -24,7 +24,7 @@ params.append('line_items[' + index + '][price_data][product_data][name]', item.
 params.append('line_items[' + index + '][price_data][unit_amount]', String(unitAmount));
 params.append('line_items[' + index + '][quantity]', String(item.quantity || 1));
 });
-const stripeRes = await fetch('https://api.stripe.com/v1/checkout/sessions ', {
+const stripeRes = await fetch('https://api.stripe.com/v1/checkout/sessions', {
 
 method: 'POST',
 headers: {

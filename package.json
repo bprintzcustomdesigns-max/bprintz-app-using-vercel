@@ -1,6 +1,7 @@
 {
   "name": "bprintz-storefront",
   "version": "1.0.0",
+  "type": "module",
   "dependencies": {
     "stripe": "^17.0.0"
   }

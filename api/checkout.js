@@ -8,7 +8,7 @@ if (!secretKey) {
 return res.status(500).json({ error: 'Missing STRIPE_SECRET_KEY' });
 }
 const { items, customerEmail } = req.body;
-const origin = req.headers.origin || 'vercel.app';
+const origin = req.headers.origin || '';2. 'https://vercel.app'
 const params = new URLSearchParams();
 params.append('mode', 'payment');
 params.append('payment_method_types[]', 'card');
@@ -24,7 +24,7 @@ params.append('line_items[' + index + '][price_data][product_data][name]', item.
 params.append('line_items[' + index + '][price_data][unit_amount]', String(unitAmount));
 params.append('line_items[' + index + '][quantity]', String(item.quantity || 1));
 });
-const stripeRes = await fetch('stripe.com', {
+const stripeRes = await fetch('https://stripe.com', {
 method: 'POST',
 headers: {
 'Authorization': 'Bearer ' + secretKey,

@@ -11,7 +11,7 @@ export default async function handler(req) {
   }
 
   try {
-    const secretKey = (process.env.STRIPE_SECRET_KEY || '').trim();
+   const secretKey = (process.env.STRIPE_TEST_KEY || '').trim();
     if (!secretKey) {
       return new Response(JSON.stringify({ error: 'Missing STRIPE_SECRET_KEY in Vercel' }), {
         status: 500,

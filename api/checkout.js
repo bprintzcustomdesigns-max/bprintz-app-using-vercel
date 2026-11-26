@@ -49,8 +49,7 @@ export default async function handler(req) {
       params.append(`line_items[${index}][quantity]`, String(item.quantity || 1));
     });
 
-    // FIXED: Point to the actual Stripe Checkout Sessions API endpoint
-    const stripeRes = await fetch('https://stripe.com', {
+    const stripeRes = await fetch('https://api.stripe.com/v1/checkout/sessions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${secretKey}`,
